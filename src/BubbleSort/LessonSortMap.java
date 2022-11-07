@@ -10,7 +10,7 @@ public class LessonSortMap {
 
     public static void main(String[] args) {
 
-        int toSort[] = {5, 3, 1, 9, 8, 2, 4, 7};
+        int toSort[] = {5, 3, 1, 9, 8, 2, 4, 7, 4, 2, 3, 67, 1, 45, 64, 672, 42, 4, 423, 6};
         int length = toSort.length; //8
         int count = 1;
 
