@@ -29,7 +29,7 @@ public class PayrollInfoKevin {
         // Displaying the employee and their salary
         System.out.println("These are the employees followed by their annual salaries.");
         for (int i = 0; i < employees.length; i++) {
-            System.out.println(employees[i] + ": " + salary[i]);
+            System.out.println(employees[i] + ": $" + salary[i]);
         }
         System.out.println("---------------------------------------");
 
@@ -52,14 +52,14 @@ public class PayrollInfoKevin {
         }
 
         // Displaying the sorted employees and their corresponding salary
-        System.out.println("Here are the employee and their corresponding salaries sorted in descending order.");
+        System.out.println("Here are the salaries of the employees sorted in descending order");
         for (int i = 0; i < employees.length; i++) {
             System.out.println(employees[i] + ": " + salary[i]);
         }
         System.out.println("---------------------------------------");
 
         // Displaying all employees that have a salary which is above $100 000
-        System.out.println("These are the employees who earn above $100 000 and their corresponding salaries.");
+        System.out.println("These are the employees who earn above $100 000 and their corresponding salary.");
         for (int i = 0; i < employees.length; i++) {
             if (salary[i] > 100000) {
                 System.out.println(employees[i] + ": " + salary[i]);
