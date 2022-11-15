@@ -1,3 +1,5 @@
+package Tests;
+
 import java.util.Scanner;
 /*
 @author kevin.tang
