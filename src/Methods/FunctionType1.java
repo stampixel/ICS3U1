@@ -2,7 +2,7 @@ package Methods;
 
 import java.util.Scanner;
 
-public class FunctionsType1 {
+public class FunctionType1 {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
 

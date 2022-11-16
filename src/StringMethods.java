@@ -1,4 +1,4 @@
-public class StringMEthods {
+public class StringMethods {
     /**
      * Demonstrate all the exmaples from the slides.
      * @param args
