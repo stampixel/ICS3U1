@@ -16,41 +16,36 @@ public class ParallelOrNot {
      */
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Enter the 2 endpoints for the first line.");
-        int slope1x1 = scan.nextInt();
-        int slope1y1 = scan.nextInt();
-        int slope1x2 = scan.nextInt();
-        int slope1y2 = scan.nextInt();
-        System.out.println("Enter the 2 endpoints for the second line.");
-        int slope2x1 = scan.nextInt();
-        int slope2y1 = scan.nextInt();
-        int slope2x2 = scan.nextInt();
-        int slope2y2 = scan.nextInt();
 
-        if (Slope(slope1x1, slope1y1, slope1x2, slope1y2, slope2x1, slope2y1, slope2x2, slope2y2)) {
+        System.out.println("Enter the 2 endpoints for the first line (x1, y1, x2, y2).");
+        double x1 = scan.nextInt();
+        double y1 = scan.nextInt();
+        double x2 = scan.nextInt();
+        double y2 = scan.nextInt();
+        double m1 = Slope(x1, y1, x2, y2);
+
+        System.out.println("Enter the 2 endpoints for the second line (x1, x2, y1, y2).");
+        x1 = scan.nextInt();
+        y1 = scan.nextInt();
+        x2 = scan.nextInt();
+        y2 = scan.nextInt();
+        double m2 = Slope(x1, y1, x2, y2);
+
+        if (m1 == m2) {
             System.out.println("The 2 slopes are parallel.");
         } else {
             System.out.println("The 2 slopes are not parallel.");
         }
-
-
-
     }
-
     /**
-     * Method that returns a boolean.
-     * return true if the slopes are parallel, return false if it is not
+     *
      * @param x1
      * @param y1
      * @param x2
      * @param y2
-     * @param sx1
-     * @param sx2
-     * @param sy1
-     * @param sy2
      * @return
      */
-    public static boolean Slope(int x1, int y1, int x2, int y2, int sx1, int sx2, int sy1, int sy2) {
-        return (y2 - y1) / (x2 - x1) == (sy2 - sy1) / (sx2 - sx1);
+    public static double Slope(double x1, double y1, double x2, double y2) {
+        return (y2 - y1) / (x2 - x1);
     }
 }
