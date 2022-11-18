@@ -6,7 +6,6 @@ public class ProcedureType1 {
         length = 5; width = 10;
         printArea(length, width);
     }
-
     private static void printArea(double length, double width) {
         double area = length * width;
         area = Math.round(area);
