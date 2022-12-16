@@ -1,3 +1,5 @@
+package FinalProject;
+
 import java.util.Scanner;
 
 public class TicTacToeAI {
@@ -7,7 +9,7 @@ public class TicTacToeAI {
     char playerTurn = 'X';
 
     public static void main(String[] args) {
-        TicTacToeAI game = new TicTacToeAI();
+        GomokuAlphaBetaPruningTest game = new GomokuAlphaBetaPruningTest();
         game.startGame();
 
 

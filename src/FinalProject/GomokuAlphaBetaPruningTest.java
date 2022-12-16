@@ -1,32 +1,21 @@
+package FinalProject;
+
 import java.util.Scanner;
 
-public class GomokuAI {
+public class GomokuAlphaBetaPruningTest {
     Scanner scan = new Scanner(System.in);
 
-    char[][] currentBoard = new char[15][15];
+    char[][] currentBoard = {{'+', '+', '+'}, {'+', '+', '+'}, {'+', '+', '+'}};
     char playerTurn = 'X';
 
     public static void main(String[] args) {
-        GomokuAI game = new GomokuAI();
+        GomokuAlphaBetaPruningTest game = new GomokuAlphaBetaPruningTest();
+        game.startGame();
 
-        // Finishing up creating the board
-        for (int i = 0; i < game.currentBoard.length; i++) {
-            for (int j = 0; j < game.currentBoard.length; j++) {
-                game.currentBoard[i][j] = '+';
-            }
-        }
-
-
-//        game.startMenu();
-        game.playerVersusAI();
-    }
-    public void startMenu() {
-        System.out.println("Please select an option: ");
-        int choice = scan.nextInt();
 
     }
 
-    public void playerVersusAI() {
+    public void startGame() {
         while (true) {
             drawBoard();
             char result = checkWinner();
@@ -47,11 +36,11 @@ public class GomokuAI {
             if (playerTurn == 'X') {
                 while (true) {
                     System.out.print("Insert the X coordinates (row): ");
-                    int playedX = scan.nextInt() - 1;
+                    int playedX = scan.nextInt()-1;
                     System.out.print("Insert the Y coordinates (column): ");
-                    int playedY = scan.nextInt() - 1;
+                    int playedY = scan.nextInt()-1;
 
-                    if (checkValidPlay(playedX, playedY)) {
+                    if (validMove(playedX, playedY)) {
                         currentBoard[playedX][playedY] = 'X';
                         playerTurn = 'O';
                         break;
@@ -61,7 +50,7 @@ public class GomokuAI {
 
                 }
             } else {
-                int[] maxArray = maxScore();
+                int[] maxArray = maxScore(-2, 2);
                 int playedAIX = maxArray[1];
                 int playedAIY = maxArray[2];
                 currentBoard[playedAIX][playedAIY] = 'O';
@@ -71,90 +60,64 @@ public class GomokuAI {
     }
 
     public void drawBoard() {
-        System.out.println("   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15");
-        for (int i = 1; i < currentBoard.length+1; i++) {
-            if (i < 10) {
-                System.out.print(" " + i + " ");
-            } else {
-                System.out.print(i + " ");
-            }
+        for (int i = 0; i < currentBoard.length; i++) {
             for (int j = 0; j < currentBoard.length; j++) {
-                System.out.print(currentBoard[i-1][j] + "  ");
+                System.out.print(currentBoard[i][j]);
+                System.out.print("  ");
             }
             System.out.println();
-
         }
-
+        System.out.println();
     }
 
-    public boolean checkValidPlay(int x, int y) {
-
-        // Need to first check if they are larger than the game board, so we don't get outOfBounds error
-        if (x > currentBoard.length || y > currentBoard.length || x < 0 || y < 0) {
+    public boolean validMove(int x, int y) {
+        if (x < 0 || y < 0 || x > 2 || y > 2) {
             return false;
-        } else if ((currentBoard[x][y] != '+')) { // Check to see that the spot is empty
-            return false;
-        }
-        return true;
+        } else return currentBoard[x][y] == '+';
     }
-
 
     public char checkWinner() {
-        for (int row = 0; row < currentBoard.length; row++) {
-            for (int col = 0; col < currentBoard[0].length - 4; col++) {
-                if (currentBoard[row][col] != '+' &&
-                        currentBoard[row][col + 1] == currentBoard[row][col] &&
-                        currentBoard[row][col + 2] == currentBoard[row][col] &&
-                        currentBoard[row][col + 3] == currentBoard[row][col] &&
-                        currentBoard[row][col + 4] == currentBoard[row][col]) {
-                    return currentBoard[row][col];
+
+        // Vertical win
+        for (int i = 0; i < 3; i++) {
+            if (currentBoard[0][i] != '+' && currentBoard[0][i] == currentBoard[1][i] && currentBoard[1][i] == currentBoard[2][i]) {
+                return currentBoard[0][i];
+            }
+        }
+
+        // Horizontal win
+        for (char[] row : currentBoard) {
+            if (row[0] == 'X' && row[1] == 'X' && row[2] == 'X') {
+                return 'X';
+            } else if (row[0] == 'O' && row[1] == 'O' && row[2] == 'O') {
+                return 'O';
+            }
+        }
+
+        // Diagonal wins
+        if (currentBoard[0][0] != '+' && currentBoard[0][0] == currentBoard[1][1] && currentBoard[0][0] == currentBoard[2][2]) {
+            return currentBoard[0][0];
+        } else if (currentBoard[0][2] != '+' && currentBoard[0][2] == currentBoard[1][1] && currentBoard[0][2] == currentBoard[2][0]) {
+            return currentBoard[0][2];
+
+        }
+
+
+        // If there's an empty spot, we continue the game
+        for (int i = 0; i < currentBoard.length; i++) {
+            for (int j = 0; j < currentBoard.length; j++) {
+                if (currentBoard[i][j] == '+') {
+                    return 0;
                 }
             }
         }
 
-        // Vertical
-        for (int row = 0; row < currentBoard.length - 4; row++) {
-            for (int col = 0; col < currentBoard[0].length; col++) {
-                if (currentBoard[row][col] != '+' &&
-                        currentBoard[row + 1][col] == currentBoard[row][col] &&
-                        currentBoard[row + 2][col] == currentBoard[row][col] &&
-                        currentBoard[row + 3][col] == currentBoard[row][col] &&
-                        currentBoard[row + 4][col] == currentBoard[row][col]) {
-                    return currentBoard[row][col];
-                }
-            }
-        }
-
-        // Check upward diagonal
-        for (int row = 4; row < currentBoard.length; row++) {
-            for (int col = 0; col < currentBoard[0].length - 4; col++) {
-                if (currentBoard[row][col] != '+' &&
-                        currentBoard[row - 1][col + 1] == currentBoard[row][col] &&
-                        currentBoard[row - 2][col + 2] == currentBoard[row][col] &&
-                        currentBoard[row - 3][col + 3] == currentBoard[row][col] &&
-                        currentBoard[row - 4][col + 4] == currentBoard[row][col]) {
-                    return currentBoard[row][col];
-                }
-            }
-        }
-
-        //check downward diagonal
-        for (int row = 0; row < currentBoard.length - 4; row++) {
-            for (int col = 0; col < currentBoard[0].length - 4; col++) {
-                if (currentBoard[row][col] != '+' &&
-                        currentBoard[row + 1][col + 1] == currentBoard[row][col] &&
-                        currentBoard[row + 2][col + 2] == currentBoard[row][col] &&
-                        currentBoard[row + 3][col + 3] == currentBoard[row][col] &&
-                        currentBoard[row + 4][col + 4] == currentBoard[row][col]) {
-                    return currentBoard[row][col];
-                }
-            }
-        }
-        return 0;
+        // If none of the previous loops or conditions return anything, it means the game is a tie
+        return '+';
     }
 
     // Player 'O' is our AI, which means we need to try to find it's max
-    public int[] maxScore() {
+    public int[] maxScore(int alpha, int beta) {
         // Possible values for maxv are:
         // -1 - loss
         // 0  - a tie
@@ -183,15 +146,15 @@ public class GomokuAI {
             return new int[]{0, 0, 0};
         }
 
-        for (int i = 0; i < currentBoard.length; i++) {
-            for (int j = 0; j < currentBoard.length; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
 
                 // If the current box is empty, the AI (player 'O') calls Min
                 // Which creates a new branch of the game decision tree
                 if (currentBoard[i][j] == '+') {
                     currentBoard[i][j] = 'O';
 
-                    int[] minReturn = minScore();
+                    int[] minReturn = minScore(alpha, beta);
                     int m = minReturn[0];
                     int min_i = minReturn[1];
                     int m_j = minReturn[2];
@@ -203,6 +166,14 @@ public class GomokuAI {
                     }
                     // Reset the value of the board to the original
                     currentBoard[i][j] = '+';
+
+                    if (maxv >= beta) {
+                        return new int[]{maxv, x, y};
+                    }
+
+                    if (maxv > alpha) {
+                        alpha = maxv;
+                    }
                 }
             }
         }
@@ -213,7 +184,7 @@ public class GomokuAI {
 
 
     // Player 'X' is the Player, which means we need to try to find it's min
-    public int[] minScore() {
+    public int[] minScore(int alpha, int beta) {
         // Possible values for minv are:
         // -1 - win
         // 0  - a tie
@@ -242,15 +213,15 @@ public class GomokuAI {
             return new int[]{0, 0, 0};
         }
 
-        for (int i = 0; i < currentBoard.length; i++) {
-            for (int j = 0; j < currentBoard.length; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
 
                 // If the current box is empty, we call min to find the least amount of possible wins for the player
                 // Which creates a new branch of the game decision tree
                 if (currentBoard[i][j] == '+') {
                     currentBoard[i][j] = 'X';
 
-                    int[] minReturn = maxScore();
+                    int[] minReturn = maxScore(alpha, beta);
                     int m = minReturn[0];
                     int min_i = minReturn[1];
                     int m_j = minReturn[2];
@@ -262,6 +233,14 @@ public class GomokuAI {
                     }
                     // Reset the value of the board to the original
                     currentBoard[i][j] = '+';
+
+                    if (minv <= alpha) {
+                        return new int[]{minv, x, y};
+                    }
+
+                    if (minv < beta) {
+                        beta = minv;
+                    }
                 }
             }
         }

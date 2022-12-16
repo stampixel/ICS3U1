@@ -1,3 +1,5 @@
+package FinalProject;
+
 import java.util.Scanner;
 
 public class GomokuAlphaBetaPruning {
@@ -18,8 +20,9 @@ public class GomokuAlphaBetaPruning {
         }
 
 
-//        game.startMenu();
+        //        game.startMenu();
         game.playerVersusAI();
+        System.out.print(game.count);
     }
 
     public void startMenu() {
@@ -138,9 +141,11 @@ public class GomokuAlphaBetaPruning {
     }
 
     // Player 'O' is our AI, which means we need to try to find it's max
+
+    // Maximizing their own value while lowering the value of the opponent
     public int[] maxScore(int alpha, int beta) {
-        count ++;
-        System.out.print(count + " ");
+        count++;
+        //        System.out.print(count + " ");
         // Possible values for maxv are:
         // -1 - loss
         // 0  - a tie
@@ -155,11 +160,11 @@ public class GomokuAlphaBetaPruning {
 
         char result = checkWinner();
 
-//        If the game came to an end, the function needs to return
-//        the evaluation function of the end.That can be:
-//        -1 - loss
-//        0 - a tie
-//        1 - win
+        //        If the game came to an end, the function needs to return
+        //        the evaluation function of the end.That can be:
+        //        -1 - loss
+        //        0 - a tie
+        //        1 - win
 
         if (result == 'X') {
             return new int[]{-1, 0, 0};
@@ -222,11 +227,11 @@ public class GomokuAlphaBetaPruning {
 
         char result = checkWinner();
 
-//        If the game came to an end, the function needs to return
-//        the evaluation function of the end.That can be:
-//        -1 - win
-//        0 - a tie
-//        1 - loss
+        //        If the game came to an end, the function needs to return
+        //        the evaluation function of the end.That can be:
+        //        -1 - win
+        //        0 - a tie
+        //        1 - loss
 
         if (result == 'X') {
             return new int[]{-1, 0, 0};
