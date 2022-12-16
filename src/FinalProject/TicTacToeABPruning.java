@@ -2,14 +2,14 @@ package FinalProject;
 
 import java.util.Scanner;
 
-public class GomokuAlphaBetaPruningTest {
+public class TicTacToeABPruning {
     Scanner scan = new Scanner(System.in);
 
     char[][] currentBoard = {{'+', '+', '+'}, {'+', '+', '+'}, {'+', '+', '+'}};
     char playerTurn = 'X';
 
     public static void main(String[] args) {
-        GomokuAlphaBetaPruningTest game = new GomokuAlphaBetaPruningTest();
+        TicTacToeABPruning game = new TicTacToeABPruning();
         game.startGame();
 
 

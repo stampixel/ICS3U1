@@ -5,11 +5,11 @@ import java.util.Scanner;
 public class TicTacToeAI {
     Scanner scan = new Scanner(System.in);
 
-    char[][] currentBoard = {{'+', '+', '+'}, {'+', '+', '+'}, {'+', '+', '+'}};
+    public static char[][] currentBoard = new char[][]{{'+', '+', '+', '+', '+'}, {'+', '+', '+', '+', '+'}, {'+', '+', '+', '+', '+'}, {'+', '+', '+', '+', '+'}, {'+', '+', '+', '+', '+'}};
     char playerTurn = 'X';
 
     public static void main(String[] args) {
-        GomokuAlphaBetaPruningTest game = new GomokuAlphaBetaPruningTest();
+        TicTacToeAI game = new TicTacToeAI();
         game.startGame();
 
 
@@ -71,7 +71,7 @@ public class TicTacToeAI {
     }
 
     public boolean validMove(int x, int y) {
-        if (x < 0 || y < 0 || x > 2 || y > 2) {
+        if (x < 0 || y < 0 || x > 4 || y > 4) {
             return false;
         } else return currentBoard[x][y] == '+';
     }
