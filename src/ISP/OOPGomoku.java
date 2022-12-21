@@ -30,13 +30,7 @@ public class OOPGomoku {
             }
         }
         while (true) {
-            System.out.println("<<HELLO, WELCOME TO CONSOLE-MOKU, AN IMPLEMENTATION OF THE POPULAR JAPANESES GAME " +
-                    "'GOMOKU,' BUT IN JAVA!>>");
-            System.out.println("1 - Player VS Player (You will need a buddy if you pick this option!)");
-            System.out.println("2 - Player VS AI (You will be going up against an AI, good luck!)");
-            System.out.println("3 - Load Saved Game From File (Continue where you left off!)");
-            System.out.println("4 - Read Game Rules (Recommended for beginners)");
-            System.out.println("------------------------------");
+            printMenu();
 
             System.out.print("Please select an option by entering the corresponding number: ");
             int choice = scan.nextInt();
@@ -54,6 +48,10 @@ public class OOPGomoku {
                 System.out.println("Invalid choice!");
             }
         }
+    }
+
+    public void printMenu() {
+
     }
 
     public void printRules() {

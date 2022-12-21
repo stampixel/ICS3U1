@@ -1,5 +1,11 @@
 package ISP;
 
+/**
+ * @author kevin.tang
+ * 2022.12.20
+ * Info: This is the GomokuAI class, I have created a seperate class so the file doesn't get to long
+ */
+
 public class GomokuAI {
 
     // Each position guarantees a certain amount of score, you can see that points increase when going towards the center
@@ -68,6 +74,13 @@ public class GomokuAI {
         return new int[]{xList[index], yList[index]};
     }
 
+    /**
+     * Since the amount of time it would take to loop through all 15x15 spots is long
+     * we create a function called fourCorner
+     * This tells the program the minimum spots that the program needs to search through for the optimal spot, improving time and efficiency
+     * @param board (the game board itself)
+     * @return
+     */
     public int[] fourCorner(int[][] board) {
         int xMin = 0;
         int xMax = board.length - 1;
@@ -75,7 +88,7 @@ public class GomokuAI {
         int yMax = board.length - 1;
 
         while (yMin < board.length && sumOfArray(board[yMin]) == 0) {
-            yMin += 1;
+            yMin ++;
         }
         if (yMin - 5 < 0 || yMin == board.length) { // If there are no pieces on the board, or the board is almost full, we set yMin to the smallest (row)
             yMin = 0;
@@ -85,7 +98,7 @@ public class GomokuAI {
 
 
         while (yMax >= 0 && sumOfArray(board[yMax]) == 0) {
-            yMax -= 1;
+            yMax --;
         }
         if (yMax + 5 > board.length - 1 || yMax == -1) {
             yMax = board.length - 1;
@@ -139,10 +152,20 @@ public class GomokuAI {
 
 
     // BASED ON THE POSTITION WE GENERATE 4 LINES, 2 DIAGONAL, AND 2 CROSSING IT, SO WE KNOW HOW LIKELY IT IS TO CONNECT
-    public int positionScore(int[][] board, int x, int y) { // Gives each position a score, telling the program how good it is to place your peice there
-        int score;
-        board[y][x] = 2;
 
+    /**
+     * Returns the score of a certain position, the score is to help determine which position is the optimal one
+     * We do this by creating 4 lines, 2 for the diagonals, 1 for vertical, and another for horizontal
+     * @param board
+     * @param x
+     * @param y
+     * @return
+     */
+    public int positionScore(int[][] board, int x, int y) {
+        int score;
+        board[y][x] = 2; // Creates the move that was passed into the function as 2, representing the AI
+
+        // Horizontal line
         String lineOne = "";
         int left = x - 4;
         int right = x + 4;
@@ -158,6 +181,7 @@ public class GomokuAI {
             lineOne += Integer.toString(board[y][i]);
         }
 
+        // Vertical line
         String lineTwo = "";
         int top = y - 4;
         int down = y + 4;
@@ -172,6 +196,8 @@ public class GomokuAI {
             lineTwo += Integer.toString(board[i][x]);
         }
 
+
+        // Downward diagonal line
         String lineThree = "";
         left = x - 4;
         right = x + 4;
@@ -179,12 +205,12 @@ public class GomokuAI {
         down = y + 4;
 
         while (left < 0 || top < 0) {
-            left += 1;
-            top += 1;
+            left ++;
+            top ++;
         }
 
         while (right > board.length - 1 || down > board.length - 1) {
-            right -= 1;
+            right --;
             down--;
         }
         while (left <= right) {
@@ -193,6 +219,8 @@ public class GomokuAI {
             top++;
         }
 
+
+        // Upward diagonal line
         String lineFour = "";
         left = x - 4;
         right = x + 4;
@@ -215,34 +243,41 @@ public class GomokuAI {
             down--;
         }
 
+        // After getting all the lines, we get a sum of their score using the function @lineScore
         score = lineScore(lineOne) + lineScore(lineTwo) + lineScore(lineThree) + lineScore(lineFour);
 
-        // Resetting evaluated square back to the original
+        // Resetting evaluated position back to the original
         board[y][x] = 0;
         return score + boardScore[y][x];
     }
 
-    public int lineScore(String line) { // Evaluating the line score based on what we defined earlier
+    /**
+     * Evaluating the line score based on what we defined earlier
+     * @param line
+     * @return
+     */
+    public int lineScore(String line) {
         int score = 0;
-        if (inLineOrNot(line, fiveInARow[0])) {
+        if (inLineOrNot(line, fiveInARow[0])) { // Five in a row gives 50000 scores
             score = 50000;
-        } else if (inLineOrNot(line, fourInARow[0])) {
+        } else if (inLineOrNot(line, fourInARow[0])) { // Four in a row gives 4320 points
             score = 4320;
         } else {
+            // Three in a line gives 720 points
             for (int i = 0; i < midThree.length; i++) {
                 if (inLineOrNot(line, midThree[i])) {
                     score = 720;
                     return score;
                 }
             }
-
+            // Two in a line gives 120 points
             for (int i = 0; i < midTwo.length; i++) {
                 if (inLineOrNot(line, midTwo[i])) {
                     score = 120;
                     return score;
                 }
             }
-
+            // Singular pieces give 20 points
             for (int i = 0; i < oneInARow.length; i++) {
                 if (inLineOrNot(line, oneInARow[i])) {
                     score = 20;
@@ -250,11 +285,16 @@ public class GomokuAI {
                 }
             }
         }
-        return score;
+        return score; // If none of those are the case, it means the board is empty, return score would be 0
     }
 
+    /**
+     * Checks if the certain combination is in the line or not (look at line 24 for all combos)
+     * @param line
+     * @param combination
+     * @return
+     */
     public boolean inLineOrNot(String line, String combination) {
-        // Same thing as .indexOf(), but returns true/false
-        return line.contains(combination);
+        return line.contains(combination); // .containes() returns either true or false
     }
 }
