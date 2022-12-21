@@ -1,0 +1,14 @@
+-------------------------------------------
+How to play:
+    - The game takes place on a 15 by 15 game board
+    - Each player takes turns placing their piece on the board
+    - The first player to reach an unbroken 5 in a sequence using their piece wins
+            - Can be horizontally, vertically, or diagonally
+
+Basic rules:
+    - Player can place 1 piece at a time
+    - No taking back moves
+    - Game will be tied if the board gets completely filled up without empty spots
+
+    - And lastly, have fun
+-------------------------------------------
