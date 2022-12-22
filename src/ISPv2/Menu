@@ -1,12 +1,23 @@
 -------------------------------------------
 <<WELCOME TO CONSOLE-MOKU>>
 Gomoku but in the console!
+-------------------------------------------
+How to play:
+    - The game takes place on a 15 by 15 game board
+    - Each player takes turns placing their piece on the board
+    - The first player to reach an unbroken 5 in a sequence using their piece wins
+            - Can be horizontally, vertically, or diagonally
 
+Basic rules:
+    - Player can place 1 piece at a time
+    - No taking back moves
+    - Game will be tied if the board gets completely filled up without empty spots
+
+    - And lastly, have fun
+-------------------------------------------
 Here are some options to get you started:
-New players are encouraged to read "How to play" first.are
 
 1 - Start game (Player vs PLayer, you will need a buddy for this one!)
 2 - Player vs AI (You will be but against a Gomoku bot made using a custom algorithm!)
-3 - How to play. Don't know how the game works, need tips, or what to read the rules?
-4 - Quit
+3 - Quit
 -------------------------------------------

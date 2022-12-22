@@ -3,12 +3,14 @@ package ISPv2;
 /**
  * @author kevin.tang
  * 2022.12.20
- * Info: This is the GomokuAI class, I have created a seperate class so the file doesn't get to long
+ * Info: This is the GomokuAI class, I have created a seperate class so the file doesn't get to long.
+ * This algorithm uses a score system, each position within a certain area will be evaluated.
+ * Each position will go through the algorithm, and it will generate a score based on how good it is
  */
 
 public class GomokuAI {
 
-    // Each position guarantees a certain amount of score, you can see that points increase when going towards the center
+    // Each position guarantees a certain amount of score, you can see that points increase when going towards the center as they are more valuable spots to take
     final int[][] boardScore =
             {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                     {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
@@ -26,17 +28,23 @@ public class GomokuAI {
                     {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0},
                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-    // Point system based on how many are in a row, all of them are string arrays so it is easier to work with (compared to having both String and String Arrays)
+    // Point system based on how many are in a row, all of them are string arrays, so it is easier to work with (compared to having both String and String Arrays)
+    // Combinations of all possible ways a 5 in a row could potentially happen
     String[] fiveInARow = {"XXXXX"}; // Score: 50000
-    String[] fourInARow = {"+XXXX+"}; // Score: 4320
+    String[] fourInARow = {"+XXXX+"}; // Score: 4500
     String[] midThree = {"+XXX++", "++XXX+", "+XX+X+", "+X+XX+", "XXXX+",
-            "+XXXX", "XX+XX", "X+XXX", "XXX+X"}; // Score: 720
-    String[] midTwo = {"++XX++", "++X+X+", "+X+X++"}; // Score: 120
+            "+XXXX", "XX+XX", "X+XXX", "XXX+X"}; // Score: 750
+    String[] midTwo = {"++XX++", "++X+X+", "+X+X++"}; // Score: 150
     String[] oneInARow = {"+++X++", "++X+++"}; // Score: 20
 
 
+    /**
+     * This method takes in the 2d array of the board, and returns an integer array that stores the row and column that the AI is going to move in
+     * @param board
+     * @return
+     */
     public int[] moveAI(char[][] board) {
-        int[] minimumSearchSpace = fourCorner(board);
+        int[] minimumSearchSpace = fourCorner(board); // First we run a method called fourCorners, that gives us the minimum search area, improving the speed
         int xMin = minimumSearchSpace[0];
         int xMax = minimumSearchSpace[1];
         int yMin = minimumSearchSpace[2];
@@ -56,10 +64,10 @@ public class GomokuAI {
                         score = temp;
                         xList = new int[board.length];
                         yList = new int[board.length];
-                        index = 0; // Also need to reset index back to 0
+                        index = 0; // Also need to reset index back to 0 as array was reset
                         xList[index] = i;
                         yList[index] = j;
-                    } else if (temp == score) { // If temp == score, we keep the list of positions that give us the highest score
+                    } else if (temp == score) { // If temp = score, we compile a list of equally strong positions until we find one that has a higher score
                         xList[index] = i;
                         yList[index] = j;
                         index++;
@@ -69,15 +77,15 @@ public class GomokuAI {
             }
         }
 
-        // Need this, cus the length of our list is fixed to 15, but some of those indices dont have numbers
-        index = (int) (Math.random() * index); // Random number form list so the move isn't predictable (all coords have the same score, so it doesn't matter which one we return)
+        // Need this, cus the length of our list is fixed to 15, but some of those indices don't have numbers
+        index = (int) (Math.random() * index); // Random number from the array so the move isn't predictable (all coords have the same score, so it doesn't matter which one we return)
         return new int[]{xList[index], yList[index]};
     }
 
     /**
      * Since the amount of time it would take to loop through all 15x15 spots is long
      * we create a function called fourCorner
-     * This tells the program the minimum spots that the program needs to search through for the optimal spot, improving time and efficiency
+     * This tells the program the minimum search area for where the program should look for the optimal position, giving it a faster time and efficiency
      * @param board (the game board itself)
      * @return
      */
@@ -87,15 +95,27 @@ public class GomokuAI {
         int yMin = 0;
         int yMax = board.length - 1;
 
+        /**
+         * Visualizing what each variable does
+         *
+         * ------------yMin----------
+         * -                        -
+         * xMin     gameBoard      xMax
+         * -                        -
+         * -----------yMax-----------
+         */
+
         while (yMin < board.length && checkForPieces(board[yMin]) == false) {
             yMin ++;
         }
-        if (yMin - 5 < 0 || yMin == board.length) { // If there are no pieces on the board, or the board is almost full, we set yMin to the smallest (row)
+        if (yMin - 5 < 0 || yMin == board.length) { // If yMin is (5 positions) near the edge of the board or yMin = board.length (meaning it is an empty board), we set yMin to 0, which expands the search area to the max
             yMin = 0;
         } else {
-            yMin = yMin - 5; // yMin will always be at least 5 blocks away
+            yMin = yMin - 5; // yMin will always be at least 5 blocks away from the outer most piece
         }
 
+
+        // THE REST IS ESSENTIALLY THE SAME LOGIC, TRY TO MAXIMUZE THE min AND MINIMIZE THE max
 
         while (yMax >= 0 && checkForPieces(board[yMax]) == false) {
             yMax --;
@@ -103,7 +123,7 @@ public class GomokuAI {
         if (yMax + 5 > board.length - 1 || yMax == -1) {
             yMax = board.length - 1;
         } else {
-            yMax = yMax + 5; // yMax will always be at least 5 blocks away
+            yMax = yMax + 5;
         }
 
         int row = 0;
@@ -149,7 +169,7 @@ public class GomokuAI {
      */
     public boolean checkForPieces(char[] arr) {
         for (int i = 0; i < arr.length; i++) {
-            if (arr[i] != '+') {
+            if (arr[i] != '+') { // If something from the array isn't equal to the original value, we know it has a piece on it
                 return true;
             }
         }
@@ -157,7 +177,6 @@ public class GomokuAI {
     }
 
 
-    // BASED ON THE POSTITION WE GENERATE 4 LINES, 2 DIAGONAL, AND 2 CROSSING IT, SO WE KNOW HOW LIKELY IT IS TO CONNECT
 
     /**
      * Returns the score of a certain position, the score is to help determine which position is the optimal one
@@ -254,7 +273,6 @@ public class GomokuAI {
 
         // Resetting evaluated position back to the original
         board[y][x] = '+';
-        System.out.println(lineOne + " ");
         return score + boardScore[y][x];
     }
 
@@ -267,20 +285,20 @@ public class GomokuAI {
         int score = 0;
         if (inLineOrNot(line, fiveInARow[0])) { // Five in a row gives 50000 scores
             score = 50000;
-        } else if (inLineOrNot(line, fourInARow[0])) { // Four in a row gives 4320 points
-            score = 4320;
+        } else if (inLineOrNot(line, fourInARow[0])) { // Four in a row gives 4500 points
+            score = 4500;
         } else {
             // Three in a line gives 720 points
             for (int i = 0; i < midThree.length; i++) {
                 if (inLineOrNot(line, midThree[i])) {
-                    score = 720;
+                    score = 750;
                     return score;
                 }
             }
             // Two in a line gives 120 points
             for (int i = 0; i < midTwo.length; i++) {
                 if (inLineOrNot(line, midTwo[i])) {
-                    score = 120;
+                    score = 150;
                     return score;
                 }
             }

@@ -1,45 +1,72 @@
 package ISPv2;
 
+/**
+ * @author kevin.tang
+ * 2022.12.20
+ * ISP project for ICS3U1
+ */
+
+import java.io.*;
 import java.util.Scanner;
 
 public class OOPGomoku {
+    // Using OOP, we created all the class variables inside here, rather than inside the main method
     Scanner scan = new Scanner(System.in);
-
-    char[][] currentBoard = new char[15][15];
     GomokuAI AI = new GomokuAI();
+    char[][] currentBoard = new char[15][15]; // Game board is represented by a 2d char array (see references)
+    char playerTurn = 'X'; // Default player turn is X
 
-    char playerTurn = 'X';
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in);
+        // Creating an object using our class (e.i. the same way we do it win java.util.Scanner)
         OOPGomoku game = new OOPGomoku();
-        GomokuAI AI = new GomokuAI();
 
-        game.startGame();
+        game.startGame(); // Running the game
     }
 
-    public void startGame() {
-//        int choice = 0;
-        // Finishing up creating the board
-        for (int i = 0; i < currentBoard.length; i++) {
-            for (int j = 0; j < currentBoard.length; j++) {
-                currentBoard[i][j] = '+';
-            }
-        }
+    /**
+     * This is the method used to run the game
+     *
+     * @throws IOException
+     */
+    public void startGame() throws IOException {
+        // Inside a while loop because player might want to return to menu screen
         while (true) {
             printMenu();
 
-            System.out.print("Please select an option by entering the corresponding number: ");
+            playerTurn = 'X'; // Resetting the player turn to X
+
+            // Populating the game board with "+," representing empty spots that a player can place their pieces on
+            for (int i = 0; i < currentBoard.length; i++) {
+                for (int j = 0; j < currentBoard.length; j++) {
+                    currentBoard[i][j] = '+';
+                }
+            }
+
+            System.out.print("Please select an option by entering the corresponding number: "); // Prompting user for a choice based on the different options
             int choice = scan.nextInt();
 
-            if (choice == 1) {
+            if (choice == 1) { // Player VS Player
                 playerVersusPlayer();
-                break;
-            } else if (choice == 2) {
+
+                System.out.print("Would you like to navigate to the main menu (Y/N): ");
+                if (scan.next().equals("Y")) {
+                    continue;
+                } else {
+                    break;
+                }
+            } else if (choice == 2) { // Player VS Computer
                 playerVersusAI();
-                break;
-            } else if (choice == 3) {
-                loadGame();
+
+                System.out.print("Would you like to navigate to the main menu (Y/N): ");
+                if (scan.next().equals("Y")) {
+                    continue;
+                } else {
+                    System.out.println("Bye!");
+                    break;
+                }
+            } else if (choice == 3) { // Quit game
+                System.out.println("Bye!");
                 break;
             } else {
                 System.out.println("Invalid choice!");
@@ -47,18 +74,38 @@ public class OOPGomoku {
         }
     }
 
-    public void printMenu() {
+
+    /**
+     * We read a file called "menu.txt" in order to get the main menu of the game and printing it
+     *
+     * @throws FileNotFoundException
+     */
+    public void printMenu() throws FileNotFoundException {
+        File myFile = new File("C:\\Users\\Kevin Tang\\IdeaProjects\\ICS3U1\\src\\ISPv2\\Menu");
+        Scanner scan = new Scanner(myFile);
+
+        // Counting total amount of lines
+        int count = 0;
+        while (scan.hasNextLine()) {
+            scan.nextLine();
+            count++;
+        }
+
+        scan = new Scanner(myFile); // Resetting scanner
+        for (int i = 0; i < count; i++) {
+            System.out.println(scan.nextLine()); // Reading and printing the lines
+        }
 
     }
 
-    public void printRules() {
 
-    }
-
+    /**
+     * This method is used to draw the game board
+     */
     public void drawBoard() {
-        System.out.println("   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15");
+        System.out.println("   a  b  c  d  e  f  g  h  i  j  k  l  m  n  o"); // Alphabets representing column
         for (int i = 1; i < currentBoard.length + 1; i++) {
-            if (i < 10) {
+            if (i < 10) { // Numbers representing the rows
                 System.out.print(" " + i + " ");
             } else {
                 System.out.print(i + " ");
@@ -67,17 +114,19 @@ public class OOPGomoku {
                 System.out.print(currentBoard[i - 1][j] + "  ");
             }
             System.out.println();
-
         }
-
+        System.out.println("-------------------------------------------");
     }
 
-    public void playerVersusPlayer() {
+    /**
+     * Method that takes care of player versus player
+     *
+     * @throws IOException
+     */
+    public void playerVersusPlayer() throws IOException {
         while (true) {
             drawBoard();
             int result = checkWinner();
-            // CHECK THIS PART MAKE SURE IT MATCHES WIUTH THE AI ONE
-
 
             // Printing the appropriate message if the game has ended
             if (result != 0) {
@@ -88,19 +137,40 @@ public class OOPGomoku {
                 } else if (result == -1) {
                     System.out.println("The game is a tie!");
                 }
-                return;
+                System.out.println("Would you like to save the state of the current board to a file (Y/N): ");
+                if (scan.next().equals("Y")) { // Ability to save/append the game board data into a file, so it can be analyzed by the player
+                    saveCurrentBoard(currentBoard, result);
+                    System.out.println("Game successfully saved in file: 'GamesPlayed.txt'");
+                    System.out.println("-------------------------------------------");
+                } else {
+                    System.out.println("Game not saved.");
+                }
+                return; // Returns to the startGame function
             }
 
-            // If it is the players turn
+            // Each player takes turns placing their pieces onto the board
             while (true) {
-                System.out.print("Insert the X coordinates (row): ");
-                int playedX = scan.nextInt() - 1;
-                System.out.print("Insert the Y coordinates (column): ");
-                int playedY = scan.nextInt() - 1;
+                System.out.println("IT IS PLAYER " + playerTurn + "'S TURN");
+                System.out.print("Enter the column letter, followed by the row number (i.e. c13): ");
+                String position = scan.next();
 
-                if (validMove(playedX, playedY)) {
-                    currentBoard[playedX][playedY] = playerTurn;
-                    if (playerTurn == 'X') {
+                int row;
+                int column;
+
+                try { // Using try and except in case user enters something that doesn't follow the format: [letter][number]
+                    int[] coordinates = parsePosition(position); // Since position inputs would look something like "c12," we use a separate function to translate that into row and column
+                    column = coordinates[0];
+                    row = coordinates[1];
+
+                } catch (Exception e) {
+                    System.out.println("Move is not valid! Try again.");
+                    continue;
+                }
+
+                // Using function to check if row and column is inside the board or not
+                if (validMove(row, column)) {
+                    currentBoard[row][column] = playerTurn;
+                    if (playerTurn == 'X') { // Switching turns of the player based on what the previous turn was
                         playerTurn = 'O';
                     } else if (playerTurn == 'O') {
                         playerTurn = 'X';
@@ -114,45 +184,66 @@ public class OOPGomoku {
         }
     }
 
-    public void playerVersusAI() {
+
+    /**
+     * Method that takes care of player versus computer
+     *
+     * @throws IOException
+     */
+    public void playerVersusAI() throws IOException { // Essentially the same thing as player vs player, so no comments unless something is different
         while (true) {
             drawBoard();
             int result = checkWinner();
 
-            // Printing the appropriate message if the game has ended
             if (result != 0) {
                 if (result == 'X') {
-                    System.out.println("The winner is X!");
+                    System.out.println("The Computer won the game, better luck next time!");
                 } else if (result == 'O') {
-                    System.out.println("The winner is O!");
+                    System.out.println("Congrats, you won!");
                 } else if (result == -1) {
                     System.out.println("The game is a tie!");
                 }
-                return;
 
+                System.out.println("Would you like to save the state of the current board to a file (Y/N): ");
+                if (scan.next().equals("Y")) {
+                    saveCurrentBoard(currentBoard, result);
+                    System.out.println("Game successfully saved in file: 'GamesPlayed.txt'");
+                    System.out.println("-------------------------------------------");
+                } else {
+                    System.out.println("Game not saved.");
+                }
+                return;
             }
 
-            // AI always goes first
-            if (playerTurn == 'X') {
-                int[] movesXY = AI.moveAI(currentBoard);
+            // X in this case is the computer, it always gets first move
+            if (playerTurn == 'X') { // AI's turn
+                int[] movesXY = AI.moveAI(currentBoard); // Using a method inside the AI object, that determines which position the AI will place its piece on
 
-                // Y is row, X is column
-                int x = movesXY[0];
-                int y = movesXY[1];
-                System.out.print(x);
-                currentBoard[y][x] = 'X';
-                playerTurn = 'O';
-                System.out.println("AI has moved");
+                int column = movesXY[0];
+                int row = movesXY[1];
+                currentBoard[row][column] = 'X';
+                playerTurn = 'O'; // Switching player turn
 
-            } else {
+            } else { // Player's turn
                 while (true) {
-                    System.out.print("Insert the X coordinates (row): ");
-                    int playedX = scan.nextInt() - 1;
-                    System.out.print("Insert the Y coordinates (column): ");
-                    int playedY = scan.nextInt() - 1;
+                    System.out.print("Enter the column letter, followed by the row number (i.e. c13): ");
+                    String position = scan.next();
 
-                    if (validMove(playedX, playedY)) {
-                        currentBoard[playedX][playedY] = 'O';
+                    int row;
+                    int column;
+
+                    try {
+                        int[] coordinates = parsePosition(position);
+                        column = coordinates[0];
+                        row = coordinates[1];
+
+                    } catch (Exception e) {
+                        System.out.println("Move is not valid! Try again.");
+                        continue;
+                    }
+
+                    if (validMove(row, column)) {
+                        currentBoard[row][column] = 'O';
                         playerTurn = 'X';
                         break;
                     } else {
@@ -161,21 +252,62 @@ public class OOPGomoku {
                 }
             }
         }
-
     }
 
-    public void loadGame() {
-
+    /**
+     * Parses the move that the player entered, taking it in as the parameter "position"
+     * @param position
+     * @return
+     */
+    public int[] parsePosition(String position) { // Format looks like "c12"
+        int[] coordinates = new int[2]; // Int array to store the row and column that will be returned
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        coordinates[0] = alphabet.indexOf(position.charAt(0)); // Directly turning the letter into a number based on its index in "alphabet" variable (column)
+        coordinates[1] = Integer.parseInt(position.substring(1)) - 1; // Getting the number after the letter (row)
+        return coordinates;
     }
 
+    /**
+     * Allows the user to save the state of the board into a file, so it can be reviewed later for analysis
+     * @param board
+     * @param winner
+     * @throws IOException
+     */
 
-    public boolean validMove(int x, int y) {
-        if (x < 0 || y < 0 || x > currentBoard.length || y > currentBoard.length) {
+    public void saveCurrentBoard(char[][] board, int winner) throws IOException { // Board is the 2d array of the game board, winner is the winner
+        PrintWriter write = new PrintWriter(new FileWriter("C:\\Users\\Kevin Tang\\IdeaProjects\\ICS3U1\\src\\ISPv2\\GamesPlayed.txt", true)); // Setting the file as appendable
+
+        write.println("The winner of this game is: " + winner);
+        for (int i = 0; i < board.length; i++) { // Appending game board to the file
+            for (int j = 0; j < board.length; j++) {
+                write.print(board[i][j] + " ");
+            }
+            write.println();
+        }
+
+        write.println("\n-------------------------------------------\n");
+
+        write.close();
+    }
+
+    /**
+     * Checking if the row and column that the player has chosen is within the range of the game board
+     * @param column
+     * @param row
+     * @return
+     */
+    public boolean validMove(int column, int row) {
+        if (column < 0 || row < 0 || column > currentBoard.length || row > currentBoard.length) {
             return false;
-        } else return currentBoard[x][y] == '+';
+        } else return currentBoard[column][row] == '+';
     }
 
+    /**
+     * Traverses the game board to find potential winners and checking if the game is a tie
+     * @return
+     */
     public int checkWinner() {
+        // Horizontal win
         for (int row = 0; row < currentBoard.length; row++) {
             for (int col = 0; col < currentBoard[0].length - 4; col++) {
                 if (currentBoard[row][col] != '+' &&
@@ -188,7 +320,7 @@ public class OOPGomoku {
             }
         }
 
-        // Vertical
+        // Vertical win
         for (int row = 0; row < currentBoard.length - 4; row++) {
             for (int col = 0; col < currentBoard[0].length; col++) {
                 if (currentBoard[row][col] != '+' &&
@@ -201,7 +333,7 @@ public class OOPGomoku {
             }
         }
 
-        // Check upward diagonal
+        // Upward diagonal win
         for (int row = 4; row < currentBoard.length; row++) {
             for (int col = 0; col < currentBoard[0].length - 4; col++) {
                 if (currentBoard[row][col] != '+' &&
@@ -214,7 +346,7 @@ public class OOPGomoku {
             }
         }
 
-        //check downward diagonal
+        // Downward diagonal win
         for (int row = 0; row < currentBoard.length - 4; row++) {
             for (int col = 0; col < currentBoard[0].length - 4; col++) {
                 if (currentBoard[row][col] != '+' &&
@@ -238,6 +370,6 @@ public class OOPGomoku {
         }
 
         // If none of the previous loops or conditions return anything, it means the game is a tie
-        return -1;
+        return (char) -1;
     }
 }
